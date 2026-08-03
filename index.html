@@ -294,6 +294,9 @@
     flex-shrink:0;
   }
   .task-delete:hover{ background:var(--paper-2); color:var(--ember); }
+  .capture-row{ display:flex; gap:0.4rem; margin-top:0.5rem; flex-wrap:wrap; flex-basis:100%; }
+  .capture-row button{ font-size:0.78rem; padding:0.4rem 0.6rem; background:var(--cream); color:var(--ink); border:1px solid var(--line); }
+  .capture-row button:hover{ background:var(--plum-soft); border-color:var(--plum); }
   .fixed-time-badge{
     font-size:0.72rem; color:var(--clay-ink); background:var(--paper-2);
     padding:0.1rem 0.45rem; border-radius:999px; margin-left:0.35rem;
@@ -694,6 +697,7 @@
         <div class="stat-box"><div class="v" id="statRacha">–</div><div class="l">Racha activa</div></div>
         <div class="stat-box"><div class="v" id="statKpi">–</div><div class="l">KPI semanal</div></div>
         <div class="stat-box"><div class="v" id="statBienestar">–</div><div class="l">Índice bienestar</div></div>
+        <div class="stat-box"><div class="v" id="statPrecision">–</div><div class="l">Precisión de estimación</div></div>
       </div>
       <p class="hint" style="margin-top:1.25rem">Satisfacción tras tus pendientes de hoy</p>
       <div class="scale-row" id="satRow"></div>
@@ -815,10 +819,12 @@
       goal: state ? state.goal : {text:"", target:7, daysDone:0, lastMarked:null},
       wellbeing: {sat:null, fun:null},
       reminderTimes: state ? state.reminderTimes : {manana:"08:00", tarde:"15:00", noche:"20:00"},
-      reminderOn: state ? state.reminderOn : {manana:false, tarde:false, noche:false}
+      reminderOn: state ? state.reminderOn : {manana:false, tarde:false, noche:false},
+      calibration: state ? state.calibration : {captures: [], factorAdjust: 0}
     };
     save("pu_state", state);
   }
+  if(!state.calibration) state.calibration = {captures: [], factorAdjust: 0};
 
   function persist(){ save("pu_state", state); }
 
@@ -1009,11 +1015,37 @@
     }).join("");
   }
 
+  // ---------- Calibración de precisión (spec Parte 9) ----------
+  // "Sin cronómetro": no pedimos minutos exactos, solo una categoría rápida,
+  // y de ahí derivamos un tiempo "real" aproximado para la fórmula de error.
+  const CAPTURE_RATIO = {rapido:0.75, esperado:1.0, lento:1.3};
+  function recordCapture(estMin, category){
+    state.calibration.captures.push({est: estMin, real: estMin * CAPTURE_RATIO[category]});
+    if(state.calibration.captures.length % 15 === 0){
+      const last15 = state.calibration.captures.slice(-15);
+      const bias = last15.reduce((a,c) => a + (c.real - c.est)/c.est, 0) / last15.length;
+      if(bias > 0.1) state.calibration.factorAdjust = Math.min(0.15, state.calibration.factorAdjust + 0.03);
+      else if(bias < -0.1) state.calibration.factorAdjust = Math.max(-0.15, state.calibration.factorAdjust - 0.03);
+    }
+    persist();
+  }
+  function calibrationStats(){
+    const caps = state.calibration.captures;
+    const unlocked = caps.length >= 15 || history.length >= 5;
+    if(!unlocked) return {unlocked:false, count:caps.length};
+    const last15 = caps.slice(-15);
+    const errPct = last15.length ? Math.round(last15.reduce((a,c)=>a+Math.abs(c.real-c.est)/c.est,0)/last15.length*100) : null;
+    return {unlocked:true, errPct};
+  }
+
   // ---------- Plan ----------
   const BLOCK_ORDER = ["manana","tarde","noche"];
   const BLOCK_LABEL = {manana:"Mañana", tarde:"Tarde", noche:"Noche"};
 
-  const ENERGY_FACTOR = {0:1.25, 1:1.0, 2:0.85};
+  const ENERGY_FACTOR_BASE = {0:1.25, 1:1.0, 2:0.85};
+  function energyFactor(level){
+    return Math.max(0.5, ENERGY_FACTOR_BASE[level] + (state.calibration.factorAdjust||0));
+  }
 
   function toMinutes(hhmm){
     const [h,m] = hhmm.split(":").map(Number);
@@ -1068,7 +1100,7 @@
     box.innerHTML = "";
     BLOCK_ORDER.forEach(b => {
       const items = buckets[b];
-      const factor = ENERGY_FACTOR[state.curve[b]];
+      const factor = energyFactor(state.curve[b]);
       const total = items.reduce((a,t)=> a + (t.fixedTime ? t.min : Math.round(t.min*factor)), 0);
       const wrap = document.createElement("div");
       wrap.className = "plan-block";
@@ -1079,7 +1111,7 @@
         </div>
         ${items.length ? `<ul class="tasks">${items.map(t => `
           <li class="task-row" style="--zone-color:${ZONE_COLOR[t.zone] || "var(--wood)"}">
-            <input type="checkbox" data-plan-id="${t.id}" aria-label="Marcar ${t.label} como hecho"/>
+            <input type="checkbox" data-plan-id="${t.id}" data-est="${t.fixedTime ? t.min : Math.round(t.min*factor)}" data-label="${t.label}" aria-label="Marcar ${t.label} como hecho"/>
             <span class="task-label">${t.label}${t.fixedTime ? ` <span class="fixed-time-badge tabular">${t.fixedTime}</span>` : ""}</span>
             <span class="task-min tabular">${t.fixedTime ? t.min : Math.round(t.min*factor)} min</span>
           </li>`).join("")}</ul>` : `<div class="empty-note">
@@ -1094,7 +1126,31 @@
       inp.addEventListener("change", e => {
         const id = e.target.getAttribute("data-plan-id");
         const t = state.tasks.find(t => t.id === id);
-        if(t){ t.done = e.target.checked; persist(); renderTasks(); renderPlan(); }
+        if(!t) return;
+        if(!e.target.checked){
+          t.done = false; persist(); renderTasks(); renderPlan();
+          return;
+        }
+        const estMin = parseInt(e.target.getAttribute("data-est"), 10) || t.min;
+        const label = e.target.getAttribute("data-label") || t.label;
+        const li = e.target.closest(".task-row");
+        li.style.flexWrap = "wrap";
+        li.innerHTML = `
+          <span class="task-label" style="flex-basis:100%">¿Cómo te fue con el tiempo de "${label}"?</span>
+          <div class="capture-row">
+            <button type="button" data-cat="rapido">Más rápido</button>
+            <button type="button" data-cat="esperado">Como se esperaba</button>
+            <button type="button" data-cat="lento">Más lento</button>
+          </div>
+        `;
+        li.querySelectorAll(".capture-row button").forEach(b => {
+          b.addEventListener("click", () => {
+            t.done = true;
+            recordCapture(estMin, b.dataset.cat);
+            renderTasks();
+            renderPlan();
+          });
+        });
       });
     });
 
@@ -1184,6 +1240,13 @@
     const feelings = history.flatMap(h => [h.sat, h.fun]).filter(v => v !== null && v !== undefined);
     const bienestar = feelings.length ? (feelings.reduce((a,b)=>a+b,0)/feelings.length).toFixed(1) : null;
     document.getElementById("statBienestar").textContent = bienestar ? bienestar + "/5" : "–";
+
+    const cal = calibrationStats();
+    const precisionEl = document.getElementById("statPrecision");
+    precisionEl.textContent = cal.unlocked
+      ? (cal.errPct !== null ? `±${cal.errPct}%` : "–")
+      : `Calibrando… ${cal.count}/15`;
+    precisionEl.style.fontSize = cal.unlocked ? "" : "1rem";
   }
 
   // ---------- Reminders ----------

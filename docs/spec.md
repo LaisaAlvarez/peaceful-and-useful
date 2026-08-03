@@ -4,6 +4,8 @@ Entrevista de requerimientos · versión pulida (v4) · Actividad: videojuegos (
 
 Fuente original: `docs/referencias/Peacefull and usefull - Entrevista.pdf`.
 
+> **Nota de producto (2026-08-03):** la función de checklist por foto (ver más abajo) se decidió **no construir** — por privacidad (implicaría IA de visión con servidor, y esta app guarda todo solo en el navegador) y porque el checklist manual + "agregar pendiente" ya cubre el mismo caso de uso sin ese riesgo. El resto del spec, incluida esta sección, se deja igual como registro de lo que se pidió originalmente. Detalle completo de la decisión en `CLAUDE.md`.
+
 ## Por qué esta actividad
 
 Videojuegos: exige pensamiento estratégico e inteligencia para resolver problemas — descubrir secretos, atajos y tesoros ocultos. Requiere entender cómo funciona el juego y su sistema, con el objetivo final de completarlo al 100%.
