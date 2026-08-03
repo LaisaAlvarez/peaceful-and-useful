@@ -288,6 +288,16 @@
   .task-row input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--clay); flex-shrink:0; }
   .task-label{ flex:1; font-size:0.95rem; }
   .task-min{ font-size:0.8rem; color:var(--ink-soft); white-space:nowrap; }
+  .task-delete{
+    background:transparent; border:none; color:var(--ink-soft);
+    font-size:1rem; line-height:1; padding:0.2rem 0.4rem; border-radius:8px;
+    flex-shrink:0;
+  }
+  .task-delete:hover{ background:var(--paper-2); color:var(--ember); }
+  .fixed-time-badge{
+    font-size:0.72rem; color:var(--clay-ink); background:var(--paper-2);
+    padding:0.1rem 0.45rem; border-radius:999px; margin-left:0.35rem;
+  }
   .add-row{ display:flex; gap:0.5rem; margin-top:0.9rem; }
   .add-row input{ flex:1; }
 
@@ -520,8 +530,10 @@
       <div class="add-row">
         <input type="text" id="newTaskLabel" placeholder="Agregar otro pendiente…" />
         <input type="number" id="newTaskMin" placeholder="min" min="1" style="width:5rem" />
+        <input type="time" id="newTaskTime" style="width:6.5rem" title="Opcional: hora fija" />
         <button id="addTaskBtn" type="button">Agregar</button>
       </div>
+      <p class="hint" style="margin:0.5rem 0 0">La hora es opcional — solo pónsela a lo que quieras hacer a huevo a esa hora. Lo demás se acomoda solo según tu energía.</p>
     </section>
 
     <div class="next-row">
@@ -545,11 +557,15 @@
           <input type="time" id="wakeTime" value="07:00"/>
         </div>
         <div class="routine-field">
+          <label for="workLeave">Te vas a trabajar</label>
+          <input type="time" id="workLeave" value="08:30"/>
+        </div>
+        <div class="routine-field">
           <label for="arriveHome">Llegas a casa</label>
           <input type="time" id="arriveHome" value="19:00"/>
         </div>
       </div>
-      <p class="hint" style="margin-top:-0.6rem">Con esto tus bloques de mañana/tarde/noche usan tu horario real, no horas genéricas.</p>
+      <p class="hint" style="margin-top:-0.6rem">Con esto tus bloques de mañana/tarde/noche usan tu horario real, no horas genéricas — la Mañana va de que despiertas a que sales de casa, no un tiempo fijo.</p>
 
       <form id="quizForm">
         <fieldset>
@@ -754,9 +770,10 @@
   document.querySelectorAll(".tab, .goto").forEach(btn => {
     btn.addEventListener("click", () => showScreen(btn.dataset.screen));
   });
-  document.getElementById("startBtn").addEventListener("click", () => {
+  document.getElementById("startBtn").addEventListener("click", (e) => {
     document.getElementById("tabbar").hidden = false;
     document.getElementById("mainApp").hidden = false;
+    e.target.closest(".cta-row").hidden = true;
     showScreen("test");
   });
 
@@ -794,7 +811,7 @@
       chronotype: state ? state.chronotype : null,
       curve: state ? state.curve : null,
       cycle: state ? state.cycle : {start:"", len:28},
-      routine: state ? state.routine : {wake:"07:00", arriveHome:"19:00"},
+      routine: state ? state.routine : {wake:"07:00", workLeave:"08:30", arriveHome:"19:00"},
       goal: state ? state.goal : {text:"", target:7, daysDone:0, lastMarked:null},
       wellbeing: {sat:null, fun:null},
       reminderTimes: state ? state.reminderTimes : {manana:"08:00", tarde:"15:00", noche:"20:00"},
@@ -834,13 +851,20 @@
       li.style.setProperty("--zone-color", ZONE_COLOR[t.zone] || "var(--clay)");
       li.innerHTML = `
         <input type="checkbox" id="chk_${t.id}" ${t.done ? "checked" : ""} aria-label="Marcar ${t.label} como hecho"/>
-        <span class="task-label">${t.label}</span>
+        <span class="task-label">${t.label}${t.fixedTime ? ` <span class="fixed-time-badge tabular">${t.fixedTime}</span>` : ""}</span>
         <span class="task-min tabular">${t.min} min</span>
+        <button type="button" class="task-delete" aria-label="Eliminar ${t.label}" title="Eliminar">✕</button>
       `;
       li.querySelector("input").addEventListener("change", e => {
         t.done = e.target.checked;
         li.classList.toggle("done", t.done);
         persist();
+        renderPlan();
+      });
+      li.querySelector(".task-delete").addEventListener("click", () => {
+        state.tasks = state.tasks.filter(x => x.id !== t.id);
+        persist();
+        renderTasks();
         renderPlan();
       });
       ul.appendChild(li);
@@ -851,11 +875,13 @@
   document.getElementById("addTaskBtn").addEventListener("click", () => {
     const labelEl = document.getElementById("newTaskLabel");
     const minEl = document.getElementById("newTaskMin");
+    const timeEl = document.getElementById("newTaskTime");
     const label = labelEl.value.trim();
     if(!label) return;
     const min = Math.max(1, parseInt(minEl.value,10) || 5);
-    state.tasks.push({id:"custom_"+Date.now(), label, zone:"Otros", min, done:false});
-    labelEl.value = ""; minEl.value = "";
+    const fixedTime = timeEl.value || null;
+    state.tasks.push({id:"custom_"+Date.now(), label, zone:"Otros", min, done:false, fixedTime});
+    labelEl.value = ""; minEl.value = ""; timeEl.value = "";
     persist();
     renderTasks();
     renderPlan();
@@ -870,10 +896,11 @@
   }
   function computeBlockTimes(){
     const wake = state.routine.wake || "07:00";
+    const workLeave = state.routine.workLeave || addMinutes(wake, 90);
     const arrive = state.routine.arriveHome || "19:00";
     const tardeEnd = addMinutes(arrive, 120);
     return {
-      manana: `${wake}–${addMinutes(wake,90)}`,
+      manana: `${wake}–${workLeave}`,
       tarde: `${arrive}–${tardeEnd}`,
       noche: `${tardeEnd}–${addMinutes(tardeEnd,120)}`
     };
@@ -988,6 +1015,30 @@
 
   const ENERGY_FACTOR = {0:1.25, 1:1.0, 2:0.85};
 
+  function toMinutes(hhmm){
+    const [h,m] = hhmm.split(":").map(Number);
+    return h*60+m;
+  }
+  function computeBlockBounds(){
+    const t = computeBlockTimes();
+    const bounds = {};
+    BLOCK_ORDER.forEach(b => {
+      const [start,end] = t[b].split("–");
+      bounds[b] = {start: toMinutes(start), end: toMinutes(end)};
+    });
+    return bounds;
+  }
+  function blockForFixedTime(hhmm, bounds){
+    const m = toMinutes(hhmm);
+    let best = BLOCK_ORDER[0], bestDist = Infinity;
+    BLOCK_ORDER.forEach(b => {
+      const {start,end} = bounds[b];
+      const dist = m < start ? start - m : (m > end ? m - end : 0);
+      if(dist < bestDist){ bestDist = dist; best = b; }
+    });
+    return best;
+  }
+
   function renderPlan(){
     const box = document.getElementById("planContent");
     const pending = state.tasks.filter(t => !t.done);
@@ -1001,16 +1052,24 @@
     }
 
     const times = computeBlockTimes();
+    const bounds = computeBlockBounds();
+    const fixedTasks = pending.filter(t => t.fixedTime);
+    const flexTasks = pending.filter(t => !t.fixedTime);
+
     const order = [...BLOCK_ORDER].sort((a,b) => state.curve[b]-state.curve[a]);
-    const sortedTasks = [...pending].sort((a,b) => b.min - a.min);
+    const sortedFlex = [...flexTasks].sort((a,b) => b.min - a.min);
     const buckets = {manana:[], tarde:[], noche:[]};
-    sortedTasks.forEach((t, i) => { buckets[order[i % order.length]].push(t); });
+    sortedFlex.forEach((t, i) => { buckets[order[i % order.length]].push(t); });
+    fixedTasks.forEach(t => { buckets[blockForFixedTime(t.fixedTime, bounds)].push(t); });
+    BLOCK_ORDER.forEach(b => {
+      buckets[b].sort((a,c) => (a.fixedTime||"") < (c.fixedTime||"") ? -1 : (a.fixedTime||"") > (c.fixedTime||"") ? 1 : 0);
+    });
 
     box.innerHTML = "";
     BLOCK_ORDER.forEach(b => {
       const items = buckets[b];
       const factor = ENERGY_FACTOR[state.curve[b]];
-      const total = items.reduce((a,t)=>a + Math.round(t.min*factor), 0);
+      const total = items.reduce((a,t)=> a + (t.fixedTime ? t.min : Math.round(t.min*factor)), 0);
       const wrap = document.createElement("div");
       wrap.className = "plan-block";
       wrap.innerHTML = `
@@ -1021,8 +1080,8 @@
         ${items.length ? `<ul class="tasks">${items.map(t => `
           <li class="task-row" style="--zone-color:${ZONE_COLOR[t.zone] || "var(--wood)"}">
             <input type="checkbox" data-plan-id="${t.id}" aria-label="Marcar ${t.label} como hecho"/>
-            <span class="task-label">${t.label}</span>
-            <span class="task-min tabular">${Math.round(t.min*factor)} min</span>
+            <span class="task-label">${t.label}${t.fixedTime ? ` <span class="fixed-time-badge tabular">${t.fixedTime}</span>` : ""}</span>
+            <span class="task-min tabular">${t.fixedTime ? t.min : Math.round(t.min*factor)} min</span>
           </li>`).join("")}</ul>` : `<div class="empty-note">
           <p style="margin:0 0 0.6rem">Sin pendientes en este bloque.</p>
           <button type="button" class="ghost btn-add-pendiente" style="font-size:0.82rem; padding:0.4rem 0.9rem;">Agregar en Checklist →</button>
@@ -1197,9 +1256,13 @@
 
   // ---------- init ----------
   document.getElementById("wakeTime").value = state.routine.wake;
+  document.getElementById("workLeave").value = state.routine.workLeave || addMinutes(state.routine.wake, 90);
   document.getElementById("arriveHome").value = state.routine.arriveHome;
   document.getElementById("wakeTime").addEventListener("change", e => {
     state.routine.wake = e.target.value; persist(); renderEnergy(); renderPlan();
+  });
+  document.getElementById("workLeave").addEventListener("change", e => {
+    state.routine.workLeave = e.target.value; persist(); renderEnergy(); renderPlan();
   });
   document.getElementById("arriveHome").addEventListener("change", e => {
     state.routine.arriveHome = e.target.value; persist(); renderEnergy(); renderPlan();
