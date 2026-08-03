@@ -114,6 +114,7 @@
     margin-right:auto;
   }
   .cta-row{ margin-top:1.75rem; }
+  #tabbar[hidden], #mainApp[hidden]{ display:none !important; }
   .cta-row button{ font-size:1rem; padding:0.85rem 2.2rem; }
 
   /* ---------- Tab bar ---------- */
@@ -479,7 +480,7 @@
   </div>
 </header>
 
-<nav class="tabbar" aria-label="Navegación principal">
+<nav class="tabbar" aria-label="Navegación principal" id="tabbar" hidden>
   <button class="tab active" data-screen="test" aria-current="page">
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
     Energía
@@ -502,7 +503,7 @@
   </button>
 </nav>
 
-<main>
+<main id="mainApp" hidden>
 
   <section class="screen" data-screen="checklist">
     <div class="screen-intro">
@@ -753,7 +754,11 @@
   document.querySelectorAll(".tab, .goto").forEach(btn => {
     btn.addEventListener("click", () => showScreen(btn.dataset.screen));
   });
-  document.getElementById("startBtn").addEventListener("click", () => showScreen("test"));
+  document.getElementById("startBtn").addEventListener("click", () => {
+    document.getElementById("tabbar").hidden = false;
+    document.getElementById("mainApp").hidden = false;
+    showScreen("test");
+  });
 
   const todayKey = () => new Date().toISOString().slice(0,10);
 
@@ -814,37 +819,33 @@
   }
 
   // ---------- Task list ----------
+  // Lista plana a propósito: nada de encabezados por zona. Si se agrupara por
+  // zona, cualquier pendiente nuevo caería siempre en "Otros" y se vería
+  // aislado del resto — aunque el plan del día (renderPlan) ya distribuye
+  // TODOS los pendientes por energía sin importar su zona.
   function renderTasks(){
     const root = document.getElementById("taskLists");
     root.innerHTML = "";
-    const zones = ["Dormitorio","Cuidado personal","Cocina"].filter(z => state.tasks.some(t => t.zone === z));
-    const extraZones = [...new Set(state.tasks.map(t=>t.zone))].filter(z => !zones.includes(z));
-    [...zones, ...extraZones].forEach(zone => {
-      const h = document.createElement("div");
-      h.className = "zone-title";
-      h.textContent = zone;
-      root.appendChild(h);
-      const ul = document.createElement("ul");
-      ul.className = "tasks";
-      state.tasks.filter(t => t.zone === zone).forEach(t => {
-        const li = document.createElement("li");
-        li.className = "task-row" + (t.done ? " done" : "");
-        li.style.setProperty("--zone-color", ZONE_COLOR[zone] || "var(--clay)");
-        li.innerHTML = `
-          <input type="checkbox" id="chk_${t.id}" ${t.done ? "checked" : ""} aria-label="Marcar ${t.label} como hecho"/>
-          <span class="task-label">${t.label}</span>
-          <span class="task-min tabular">${t.min} min</span>
-        `;
-        li.querySelector("input").addEventListener("change", e => {
-          t.done = e.target.checked;
-          li.classList.toggle("done", t.done);
-          persist();
-          renderPlan();
-        });
-        ul.appendChild(li);
+    const ul = document.createElement("ul");
+    ul.className = "tasks";
+    state.tasks.forEach(t => {
+      const li = document.createElement("li");
+      li.className = "task-row" + (t.done ? " done" : "");
+      li.style.setProperty("--zone-color", ZONE_COLOR[t.zone] || "var(--clay)");
+      li.innerHTML = `
+        <input type="checkbox" id="chk_${t.id}" ${t.done ? "checked" : ""} aria-label="Marcar ${t.label} como hecho"/>
+        <span class="task-label">${t.label}</span>
+        <span class="task-min tabular">${t.min} min</span>
+      `;
+      li.querySelector("input").addEventListener("change", e => {
+        t.done = e.target.checked;
+        li.classList.toggle("done", t.done);
+        persist();
+        renderPlan();
       });
-      root.appendChild(ul);
+      ul.appendChild(li);
     });
+    root.appendChild(ul);
   }
 
   document.getElementById("addTaskBtn").addEventListener("click", () => {
