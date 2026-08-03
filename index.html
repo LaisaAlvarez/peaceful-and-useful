@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Peacefull and usefull</title>
+<style>
+  :root{
+    --cream:#FBF1E4;
+    --paper:#F3E4CE;
+    --paper-2:#EEDBC0;
+    --ink:#3A2A22;
+    --ink-soft:#6B5748;
+    --clay:#C9622A;
+    --clay-ink:#8C431A;
+    --ember:#9C3B2E;
+    --plum:#7C5A82;
+    --plum-soft:#B79BC0;
+    --wood:#8C6239;
+    --wood-dark:#5E3F22;
+    --moss:#6F8F6B;
+    --gold:#D9A441;
+    --line:rgba(94,63,34,0.18);
+    --shadow:rgba(94,63,34,0.16);
+    --ok-bg:#EAF2E7;
+    --ok-ink:#4A6B45;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --cream:#221A15;
+      --paper:#2C221B;
+      --paper-2:#332720;
+      --ink:#F3E6D8;
+      --ink-soft:#CBB6A4;
+      --clay:#E08046;
+      --clay-ink:#F0A876;
+      --ember:#D1685A;
+      --plum:#B79BC0;
+      --plum-soft:#8C6E93;
+      --wood:#B98A56;
+      --wood-dark:#8C6239;
+      --moss:#8FAE8A;
+      --gold:#E0B863;
+      --line:rgba(233,204,168,0.16);
+      --shadow:rgba(0,0,0,0.35);
+      --ok-bg:#28331F;
+      --ok-ink:#B9D3B0;
+    }
+  }
+  :root[data-theme="dark"]{
+    --cream:#221A15; --paper:#2C221B; --paper-2:#332720; --ink:#F3E6D8; --ink-soft:#CBB6A4;
+    --clay:#E08046; --clay-ink:#F0A876; --ember:#D1685A; --plum:#B79BC0; --plum-soft:#8C6E93;
+    --wood:#B98A56; --wood-dark:#8C6239; --moss:#8FAE8A; --gold:#E0B863;
+    --line:rgba(233,204,168,0.16); --shadow:rgba(0,0,0,0.35); --ok-bg:#28331F; --ok-ink:#B9D3B0;
+  }
+  :root[data-theme="light"]{
+    --cream:#FBF1E4; --paper:#F3E4CE; --paper-2:#EEDBC0; --ink:#3A2A22; --ink-soft:#6B5748;
+    --clay:#C9622A; --clay-ink:#8C431A; --ember:#9C3B2E; --plum:#7C5A82; --plum-soft:#B79BC0;
+    --wood:#8C6239; --wood-dark:#5E3F22; --moss:#6F8F6B; --gold:#D9A441;
+    --line:rgba(94,63,34,0.18); --shadow:rgba(94,63,34,0.16); --ok-bg:#EAF2E7; --ok-ink:#4A6B45;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:-apple-system,"Segoe UI","Avenir Next","Helvetica Neue",Arial,sans-serif;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:5.75rem;
+  }
+  h1,h2,h3{
+    font-family:"Iowan Old Style","Palatino Linotype",Georgia,"Times New Roman",serif;
+    color:var(--ink);
+    text-wrap:balance;
+    margin:0;
+  }
+  .tabular{ font-variant-numeric:tabular-nums; }
+  a{ color:var(--clay-ink); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    overflow:hidden;
+    padding:3.5rem 1.5rem 2.5rem;
+    text-align:center;
+    background:linear-gradient(180deg,var(--paper-2) 0%, var(--cream) 78%);
+    border-bottom:1px solid var(--line);
+  }
+  .hero-illustration{
+    width:min(420px, 80vw);
+    margin:0 auto 1.25rem;
+    display:block;
+    border-radius:20px;
+    box-shadow:0 14px 30px -18px var(--shadow);
+  }
+  .wordmark{
+    font-size:clamp(2rem, 3.2vw + 1rem, 3rem);
+    letter-spacing:0.01em;
+    font-style:italic;
+    font-weight:500;
+  }
+  .wordmark .and{
+    color:var(--clay-ink);
+    font-style:normal;
+  }
+  .tagline{
+    margin-top:0.6rem;
+    color:var(--ink-soft);
+    font-size:1.05rem;
+    max-width:34rem;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .cta-row{ margin-top:1.75rem; }
+  .cta-row button{ font-size:1rem; padding:0.85rem 2.2rem; }
+
+  /* ---------- Tab bar ---------- */
+  .tabbar{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    display:flex; justify-content:space-around;
+    background:var(--paper);
+    border-top:1px solid var(--line);
+    padding:0.45rem 0.25rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
+    box-shadow:0 -10px 24px -18px var(--shadow);
+  }
+  .tab{
+    flex:1; max-width:130px;
+    background:transparent; color:var(--ink-soft);
+    border:none; border-radius:14px;
+    padding:0.45rem 0.3rem;
+    font-family:inherit;
+    font-size:0.74rem;
+    display:flex; flex-direction:column; align-items:center; gap:0.3rem;
+    cursor:pointer;
+  }
+  .tab svg{ width:20px; height:20px; }
+  .tab:hover{ filter:none; background:var(--paper-2); }
+  .tab.active{ background:var(--paper-2); color:var(--clay-ink); font-weight:700; }
+
+  /* ---------- Layout ---------- */
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding:2.25rem 1.25rem 3rem;
+    display:block;
+  }
+  .screen{ display:none; }
+  .screen.active{ display:grid; gap:1.5rem; }
+  .screen-intro{ margin-bottom:0.25rem; }
+  .screen-intro h1{ font-size:1.7rem; }
+  .screen-intro p{ color:var(--ink-soft); margin-top:0.4rem; }
+
+  .card{
+    background:var(--paper);
+    border-radius:20px;
+    border:1px solid var(--line);
+    box-shadow:0 10px 24px -18px var(--shadow);
+    padding:1.75rem;
+    position:relative;
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0; left:1.5rem; right:1.5rem;
+    height:4px;
+    border-radius:0 0 4px 4px;
+    background:var(--accent, var(--clay));
+  }
+  .card--scan{ --accent: var(--clay); }
+  .card--energy{ --accent: var(--plum); }
+  .card--plan{ --accent: var(--gold); }
+  .card--reminders{ --accent: var(--ember); }
+
+  .card h2{
+    font-size:1.4rem;
+    margin-bottom:0.35rem;
+  }
+  .card .hint{
+    color:var(--ink-soft);
+    font-size:0.9rem;
+    margin-bottom:1.1rem;
+  }
+  .eyebrow{
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    font-weight:600;
+  }
+
+  /* ---------- Form controls ---------- */
+  button{
+    font-family:inherit;
+    font-size:0.95rem;
+    border:none;
+    border-radius:999px;
+    padding:0.65rem 1.3rem;
+    background:var(--clay);
+    color:#fff;
+    cursor:pointer;
+    transition:filter 0.15s ease, transform 0.1s ease;
+  }
+  button:hover{ filter:brightness(1.06); }
+  button:active{ transform:scale(0.98); }
+  button.ghost{
+    background:transparent;
+    color:var(--ink);
+    border:1px solid var(--line);
+  }
+  button:focus-visible, input:focus-visible, a:focus-visible, label:focus-within{
+    outline:2px solid var(--plum);
+    outline-offset:2px;
+  }
+  button[disabled]{ opacity:0.5; cursor:not-allowed; }
+
+  .next-row{ display:flex; justify-content:flex-end; margin-top:0.25rem; }
+
+  input[type="file"]{
+    font-size:0.9rem;
+    color:var(--ink-soft);
+  }
+  input[type="date"], input[type="number"], input[type="time"], input[type="text"]{
+    font-family:inherit;
+    font-size:0.95rem;
+    padding:0.5rem 0.7rem;
+    border-radius:10px;
+    border:1px solid var(--line);
+    background:var(--cream);
+    color:var(--ink);
+  }
+  fieldset{
+    border:none;
+    padding:0;
+    margin:0 0 1rem;
+  }
+  legend{
+    font-size:0.95rem;
+    font-weight:600;
+    margin-bottom:0.4rem;
+    padding:0;
+  }
+  .options{
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.5rem;
+  }
+  .options label{
+    display:flex;
+    align-items:center;
+    gap:0.4rem;
+    font-size:0.88rem;
+    padding:0.4rem 0.7rem;
+    border-radius:999px;
+    border:1px solid var(--line);
+    cursor:pointer;
+    background:var(--cream);
+  }
+  .options input:checked + span{ font-weight:700; }
+  .options label:has(input:checked){
+    background:var(--plum-soft);
+    border-color:var(--plum);
+  }
+
+  /* ---------- Checklist ---------- */
+  .zone-title{
+    font-size:0.78rem;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    margin:1rem 0 0.5rem;
+  }
+  .zone-title:first-of-type{ margin-top:0; }
+  ul.tasks{ list-style:none; margin:0; padding:0; display:grid; gap:0.5rem; }
+  .task-row{
+    display:flex;
+    align-items:center;
+    gap:0.65rem;
+    padding:0.5rem 0.65rem;
+    border-radius:12px;
+    border-left:3px solid var(--zone-color, var(--clay));
+    background:var(--cream);
+  }
+  .task-row.done{ opacity:0.55; }
+  .task-row.done .task-label{ text-decoration:line-through; }
+  .task-row input[type="checkbox"]{ width:18px; height:18px; accent-color:var(--clay); flex-shrink:0; }
+  .task-label{ flex:1; font-size:0.95rem; }
+  .task-min{ font-size:0.8rem; color:var(--ink-soft); white-space:nowrap; }
+  .add-row{ display:flex; gap:0.5rem; margin-top:0.9rem; }
+  .add-row input{ flex:1; }
+
+
+  /* ---------- Energy curve ---------- */
+  .curve{
+    display:flex;
+    gap:0.75rem;
+    margin-top:1rem;
+  }
+  .curve-block{
+    flex:1;
+    text-align:center;
+    padding:0.9rem 0.4rem 0.7rem;
+    border-radius:14px;
+    background:var(--cream);
+    border:1px solid var(--line);
+  }
+  .curve-bar-track{
+    height:70px;
+    width:14px;
+    margin:0 auto 0.5rem;
+    border-radius:8px;
+    background:var(--paper-2);
+    display:flex;
+    align-items:flex-end;
+    overflow:hidden;
+  }
+  .curve-bar-fill{
+    width:100%;
+    border-radius:8px;
+    background:linear-gradient(180deg, var(--gold), var(--clay));
+  }
+  .curve-label{ font-size:0.8rem; color:var(--ink-soft); }
+  .curve-value{ font-size:0.85rem; font-weight:700; margin-top:0.15rem; }
+
+  /* ---------- Result "momento" ---------- */
+  .result-empty{
+    text-align:center;
+    padding:2.5rem 1.5rem;
+  }
+  .result-empty p{ color:var(--ink-soft); margin:0.5rem auto 1.25rem; max-width:28rem; }
+  .result-hero{
+    text-align:center;
+    padding:0.5rem 0.5rem 1.5rem;
+    border-bottom:1px solid var(--line);
+    margin-bottom:1.5rem;
+  }
+  .result-hero .eyebrow{ display:block; margin-bottom:0.4rem; }
+  .result-hero .chronotype{
+    font-size:1.7rem;
+    color:var(--clay-ink);
+  }
+  .result-hero .phase-note{
+    margin-top:0.4rem;
+    color:var(--ink-soft);
+    font-size:0.92rem;
+  }
+
+  /* ---------- Plan ---------- */
+  .plan-block{ margin-bottom:1.1rem; }
+  .plan-block:last-child{ margin-bottom:0; }
+  .plan-block-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:0.5rem;
+  }
+  .plan-block-head h3{ font-size:1.05rem; }
+  .plan-block-head .total{ font-size:0.82rem; color:var(--ink-soft); }
+  .empty-note{
+    color:var(--ink-soft);
+    font-size:0.9rem;
+    padding:0.75rem;
+    border:1px dashed var(--line);
+    border-radius:12px;
+  }
+
+  .adventure-strip{
+    display:flex;
+    align-items:center;
+    gap:0.9rem;
+    margin-top:1.25rem;
+    padding:0.9rem 1.1rem;
+    border-radius:14px;
+    background:linear-gradient(90deg, var(--wood-dark), var(--wood));
+    color:#F6E9D8;
+  }
+  .adventure-strip svg{ flex-shrink:0; }
+  .adventure-strip .big{ font-size:1.15rem; font-weight:700; }
+  .adventure-strip .small{ font-size:0.82rem; opacity:0.85; }
+
+  /* ---------- Reminders ---------- */
+  .reminder-row{
+    display:flex;
+    align-items:center;
+    gap:0.75rem;
+    padding:0.6rem 0;
+    border-bottom:1px solid var(--line);
+  }
+  .reminder-row:last-child{ border-bottom:none; }
+  .reminder-row label{ flex:1; font-size:0.95rem; }
+  .toggle{
+    position:relative;
+    width:42px; height:24px;
+    flex-shrink:0;
+  }
+  .toggle input{ position:absolute; inset:0; opacity:0; cursor:pointer; margin:0; z-index:1; }
+  .toggle .track{
+    position:absolute; inset:0;
+    background:var(--paper-2);
+    border-radius:999px;
+    border:1px solid var(--line);
+    transition:background 0.15s ease;
+    pointer-events:none;
+  }
+  .toggle .thumb{
+    position:absolute; top:2px; left:2px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,0.25);
+    transition:transform 0.15s ease;
+    pointer-events:none;
+  }
+  .toggle input:checked + .track{ background:var(--clay); }
+  .toggle input:checked + .track + .thumb{ transform:translateX(18px); }
+  .note{ font-size:0.82rem; color:var(--ink-soft); margin-top:0.9rem; }
+
+  .status-chip{
+    display:inline-block;
+    font-size:0.78rem;
+    padding:0.25rem 0.6rem;
+    border-radius:999px;
+    background:var(--ok-bg);
+    color:var(--ok-ink);
+    margin-top:0.75rem;
+  }
+
+  footer{
+    text-align:center;
+    padding:2rem 1.25rem 2rem;
+    color:var(--ink-soft);
+    font-size:0.85rem;
+  }
+
+  .visually-hidden{
+    position:absolute; width:1px; height:1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap;
+  }
+
+  .container-wide{ overflow-x:auto; }
+
+  /* ---------- Routine mini-fields ---------- */
+  .routine-row{ display:flex; gap:0.75rem; flex-wrap:wrap; align-items:flex-end; margin:0.75rem 0 1.25rem; }
+  .routine-field{ display:flex; flex-direction:column; gap:0.25rem; font-size:0.85rem; color:var(--ink-soft); }
+  .routine-field input{ width:8rem; }
+
+  /* ---------- Goal / KPI ---------- */
+  .card--goals{ --accent: var(--moss); }
+  .card--wellbeing{ --accent: var(--plum-soft); }
+  .card--config{ --accent: var(--plum); }
+  .goal-row{ display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1rem; }
+  .goal-row input[type="text"]{ flex:1; min-width:10rem; }
+  .goal-row input[type="number"]{ width:5rem; }
+  .progress-track{ height:10px; border-radius:999px; background:var(--paper-2); overflow:hidden; margin:0.4rem 0; }
+  .progress-fill{ height:100%; background:linear-gradient(90deg, var(--moss), var(--gold)); border-radius:999px; transition:width 0.2s ease; }
+  .goal-meta{ display:flex; justify-content:space-between; font-size:0.85rem; color:var(--ink-soft); }
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:0.85rem; margin-top:0.5rem; }
+  .stat-box{ background:var(--cream); border:1px solid var(--line); border-radius:14px; padding:1rem 0.7rem; text-align:center; }
+  .stat-box .v{ font-size:1.7rem; font-weight:700; color:var(--clay-ink); }
+  .stat-box .l{ font-size:0.76rem; color:var(--ink-soft); margin-top:0.15rem; }
+  .scale-row{ display:flex; gap:0.4rem; margin:0.4rem 0 1.1rem; flex-wrap:wrap; }
+  .scale-row button{ flex:1; min-width:5.2rem; font-size:0.8rem; padding:0.5rem 0.4rem; background:var(--cream); color:var(--ink); border:1px solid var(--line); }
+  .scale-row button.on{ background:var(--plum-soft); border-color:var(--plum); color:var(--ink); font-weight:700; }
+
+  .dashboard-head{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:0.25rem; }
+  .dashboard-head .eyebrow{ margin-bottom:0; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img class="hero-illustration" src="outputs/hero.webp" alt="Ilustración de una mujer sentada con las piernas cruzadas, tomando té junto a un bonsái con flores de cerezo, sobre un tapete redondo" />
+
+  <h1 class="wordmark">Peacefull <span class="and">and</span> usefull</h1>
+  <p class="tagline">Marca tu checklist, mide tu energía del día, y deja que tu propio plan de quehaceres se arme solo — para que llegues a tu tarde de Hollow Knight con la mente en paz.</p>
+  <div class="cta-row">
+    <button type="button" id="startBtn">Comenzar</button>
+  </div>
+</header>
+
+<nav class="tabbar" aria-label="Navegación principal">
+  <button class="tab active" data-screen="test" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    Energía
+  </button>
+  <button class="tab" data-screen="checklist">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M8 12l2.5 2.5L16 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Checklist
+  </button>
+  <button class="tab" data-screen="resultados">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10M12 20V4M20 20v-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    Tu plan
+  </button>
+  <button class="tab" data-screen="kpi">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    KPI
+  </button>
+  <button class="tab" data-screen="config">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13.5a7.6 7.6 0 0 0 0-3l2-1.4-2-3.4-2.3.9a7.7 7.7 0 0 0-2.6-1.5L14 2.5h-4l-.5 2.6a7.7 7.7 0 0 0-2.6 1.5l-2.3-.9-2 3.4 2 1.4a7.6 7.6 0 0 0 0 3l-2 1.4 2 3.4 2.3-.9c.77.66 1.65 1.17 2.6 1.5l.5 2.6h4l.5-2.6a7.7 7.7 0 0 0 2.6-1.5l2.3.9 2-3.4-2-1.4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+    Ajustes
+  </button>
+</nav>
+
+<main>
+
+  <section class="screen" data-screen="checklist">
+    <div class="screen-intro">
+      <span class="eyebrow">Paso 2</span>
+      <h1>Tu rutina</h1>
+      <p>Con tu energía ya medida, marca lo que ya hiciste y agrega lo que falte. Así no se te escapa ni el detalle más chiquito.</p>
+    </div>
+
+    <section class="card card--scan" aria-labelledby="scan-h">
+      <h2 id="scan-h" class="visually-hidden">Checklist de pendientes</h2>
+
+      <div id="taskLists"></div>
+
+      <div class="add-row">
+        <input type="text" id="newTaskLabel" placeholder="Agregar otro pendiente…" />
+        <input type="number" id="newTaskMin" placeholder="min" min="1" style="width:5rem" />
+        <button id="addTaskBtn" type="button">Agregar</button>
+      </div>
+    </section>
+
+    <div class="next-row">
+      <button type="button" class="goto" data-screen="resultados">Siguiente: ver tu plan →</button>
+    </div>
+  </section>
+
+  <section class="screen active" data-screen="test">
+    <div class="screen-intro">
+      <span class="eyebrow">Paso 1</span>
+      <h1>¿Cómo está tu energía hoy?</h1>
+      <p>Un test rápido de bioritmo y descanso, para saber si eres más de mañana o de noche — y qué tan cargada llegaste hoy.</p>
+    </div>
+
+    <section class="card card--energy" aria-labelledby="energy-h">
+      <h2 id="energy-h" class="visually-hidden">Test de energía</h2>
+
+      <div class="routine-row">
+        <div class="routine-field">
+          <label for="wakeTime">Despiertas</label>
+          <input type="time" id="wakeTime" value="07:00"/>
+        </div>
+        <div class="routine-field">
+          <label for="arriveHome">Llegas a casa</label>
+          <input type="time" id="arriveHome" value="19:00"/>
+        </div>
+      </div>
+      <p class="hint" style="margin-top:-0.6rem">Con esto tus bloques de mañana/tarde/noche usan tu horario real, no horas genéricas.</p>
+
+      <form id="quizForm">
+        <fieldset>
+          <legend>1. ¿A qué hora despiertas de forma natural, sin alarma?</legend>
+          <div class="options">
+            <label><input type="radio" name="q1" value="2"/><span>Antes de las 7:00</span></label>
+            <label><input type="radio" name="q1" value="1"/><span>Entre 7:00 y 9:00</span></label>
+            <label><input type="radio" name="q1" value="0"/><span>Después de las 9:00</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>2. ¿Cuándo sientes la mente más clara?</legend>
+          <div class="options">
+            <label><input type="radio" name="q2" value="2"/><span>En la mañana</span></label>
+            <label><input type="radio" name="q2" value="1"/><span>En la tarde</span></label>
+            <label><input type="radio" name="q2" value="0"/><span>En la noche</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>3. Después de comer, ¿cómo sigues por la tarde?</legend>
+          <div class="options">
+            <label><input type="radio" name="q3" value="2"/><span>Con energía</span></label>
+            <label><input type="radio" name="q3" value="1"/><span>Estable</span></label>
+            <label><input type="radio" name="q3" value="0"/><span>Con sueño</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>4. Tu momento ideal para jugar sería…</legend>
+          <div class="options">
+            <label><input type="radio" name="q4" value="2"/><span>Mañana temprano</span></label>
+            <label><input type="radio" name="q4" value="1"/><span>Media tarde</span></label>
+            <label><input type="radio" name="q4" value="0"/><span>Ya entrada la noche</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>5. ¿Cuántas horas dormiste anoche?</legend>
+          <div class="options">
+            <label><input type="radio" name="sleepHrs" value="menos6"/><span>Menos de 6h</span></label>
+            <label><input type="radio" name="sleepHrs" value="6a8"/><span>Entre 6 y 8h</span></label>
+            <label><input type="radio" name="sleepHrs" value="mas8"/><span>Más de 8h</span></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>6. ¿Tu horario de sueño es parecido todos los días?</legend>
+          <div class="options">
+            <label><input type="radio" name="sleepVar" value="variable"/><span>Muy variable</span></label>
+            <label><input type="radio" name="sleepVar" value="algo"/><span>Algo variable</span></label>
+            <label><input type="radio" name="sleepVar" value="constante"/><span>Constante</span></label>
+          </div>
+        </fieldset>
+
+        <p class="hint">¿Quieres sumar el ajuste por ciclo hormonal? Actívalo en <strong>Ajustes</strong> — vive ahí, no aquí.</p>
+
+        <button type="submit">Calcular mi energía</button>
+      </form>
+    </section>
+  </section>
+
+  <section class="screen" data-screen="resultados">
+    <div class="screen-intro">
+      <span class="eyebrow">Se genera solo</span>
+      <h1>Tu plan de hoy</h1>
+      <p>En cuanto tengas tu checklist y tu energía calculadas, aquí se acomoda todo por bloque del día — lo pesado donde tienes más pila, lo ligero donde no.</p>
+    </div>
+
+    <div id="resultEmpty" class="card result-empty">
+      <p>Todavía no calculas tu energía de hoy. Hazlo en la pestaña "Energía" y tu plan aparece aquí solo.</p>
+      <button type="button" class="goto" data-screen="test">Ir al test de energía</button>
+    </div>
+
+    <div id="resultContent" hidden style="display:grid; gap:1.5rem;">
+      <section class="card card--energy result-hero">
+        <span class="eyebrow">Tu resultado</span>
+        <div class="chronotype" id="chronotypeLabel"></div>
+        <p class="phase-note" id="phaseNote"></p>
+        <div class="curve" id="curveDisplay"></div>
+      </section>
+
+      <section class="card card--plan" aria-labelledby="plan-h">
+        <h2 id="plan-h" class="visually-hidden">Plan del día</h2>
+        <div id="planContent"></div>
+        <div class="adventure-strip" id="adventureStrip">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20 L14 10" stroke="#F6E9D8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M13 7 L17 3 L21 7 L17 11 Z" fill="#F6E9D8"/>
+            <circle cx="6" cy="18" r="2.4" fill="#D9A441"/>
+          </svg>
+          <div>
+            <div class="big" id="adventureMinutes">0 min</div>
+            <div class="small">ganados hoy para tu aventura en Hollow Knight</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card card--reminders" aria-labelledby="rem-h">
+        <span class="eyebrow">Paso 3</span>
+        <h2 id="rem-h">Recordatorios</h2>
+        <p class="hint">Elige a qué hora empieza cada bloque y activa los avisos.</p>
+
+        <div id="reminderRows"></div>
+
+        <div style="margin-top:1rem;display:flex;gap:0.7rem;align-items:center;flex-wrap:wrap">
+          <button id="enableNotifs" type="button">Activar recordatorios</button>
+          <span class="status-chip" id="notifStatus" hidden></span>
+        </div>
+        <p class="note">Los recordatorios suenan mientras esta pestaña siga abierta en tu navegador — es un prototipo local, no un servicio en segundo plano.</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="kpi">
+    <div class="screen-intro">
+      <span class="eyebrow">Fase 2</span>
+      <h1>Tu tablero</h1>
+      <p>Aquí vive el seguimiento real: qué tanto cumples, tu racha, y cómo te sientes con todo esto.</p>
+    </div>
+
+    <section class="card card--wellbeing" aria-labelledby="well-h">
+      <div class="dashboard-head">
+        <span class="eyebrow">Últimos 7 días</span>
+      </div>
+      <h2 id="well-h" class="visually-hidden">KPI semanal</h2>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="v" id="statAdherencia">–</div><div class="l">Adherencia (7 días)</div></div>
+        <div class="stat-box"><div class="v" id="statRacha">–</div><div class="l">Racha activa</div></div>
+        <div class="stat-box"><div class="v" id="statKpi">–</div><div class="l">KPI semanal</div></div>
+        <div class="stat-box"><div class="v" id="statBienestar">–</div><div class="l">Índice bienestar</div></div>
+      </div>
+      <p class="hint" style="margin-top:1.25rem">Satisfacción tras tus pendientes de hoy</p>
+      <div class="scale-row" id="satRow"></div>
+      <p class="hint">Felicidad tras tu sesión de juego</p>
+      <div class="scale-row" id="funRow"></div>
+    </section>
+
+    <section class="card card--goals" aria-labelledby="goal-h">
+      <span class="eyebrow">Tu meta</span>
+      <h2 id="goal-h">Ponle nombre a tu meta</h2>
+      <p class="hint">Cada día que cumplas tu checklist, cuenta.</p>
+      <div class="goal-row">
+        <input type="text" id="goalText" placeholder="Ej. Mantener mi cuarto en orden este mes"/>
+        <input type="number" id="goalTarget" min="1" value="7"/>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="goalBar" style="width:0%"></div></div>
+      <div class="goal-meta">
+        <span id="goalDaysLabel">0 de 7 días</span>
+        <span id="goalPct">0%</span>
+      </div>
+      <button type="button" id="markDayBtn" style="margin-top:0.9rem">Marcar hoy como día cumplido</button>
+    </section>
+  </section>
+
+  <section class="screen" data-screen="config">
+    <div class="screen-intro">
+      <span class="eyebrow">Configuración</span>
+      <h1>Ajustes</h1>
+      <p>Todo lo sensible vive aquí, apagado por defecto — nunca en la pantalla principal.</p>
+    </div>
+
+    <section class="card card--config" aria-labelledby="config-h">
+      <h2 id="config-h">Ajuste por ciclo hormonal</h2>
+      <p class="hint">Opcional. Esto solo se guarda en este navegador, en tu equipo — no se envía a ningún lado. Es una estimación general, no un consejo médico.</p>
+
+      <div class="reminder-row" style="border-bottom:none">
+        <label for="cycleEnabled">Activar ajuste por ciclo</label>
+        <span class="toggle">
+          <input type="checkbox" id="cycleEnabled"/>
+          <span class="track"></span>
+          <span class="thumb"></span>
+        </span>
+      </div>
+
+      <div id="cycleFields" hidden style="margin-top:0.75rem">
+        <label for="cycleStart" style="font-size:0.88rem">Fecha de inicio del último periodo</label><br/>
+        <input type="date" id="cycleStart" style="margin:0.3rem 0 0.7rem"/><br/>
+        <label for="cycleLen" style="font-size:0.88rem">Duración promedio del ciclo (días)</label><br/>
+        <input type="number" id="cycleLen" min="20" max="40" value="28" style="width:5rem;margin-top:0.3rem"/>
+      </div>
+    </section>
+  </section>
+
+</main>
+
+<footer>
+  Peacefull and usefull — todo lo que guardas aquí vive únicamente en este navegador.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Navigation ----------
+  function showScreen(id){
+    document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.dataset.screen === id));
+    document.querySelectorAll(".tab").forEach(b => {
+      const on = b.dataset.screen === id;
+      b.classList.toggle("active", on);
+      if(on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+    });
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+  document.querySelectorAll(".tab, .goto").forEach(btn => {
+    btn.addEventListener("click", () => showScreen(btn.dataset.screen));
+  });
+  document.getElementById("startBtn").addEventListener("click", () => showScreen("test"));
+
+  const todayKey = () => new Date().toISOString().slice(0,10);
+
+  const DEFAULT_TASKS = [
+    {id:"cama", label:"Tender la cama", zone:"Dormitorio", min:5},
+    {id:"zapatos", label:"Guardar los zapatos en su lugar", zone:"Dormitorio", min:3},
+    {id:"ropa", label:"Guardar la ropa recién usada", zone:"Dormitorio", min:4},
+    {id:"buros", label:"Ordenar burós y superficies", zone:"Dormitorio", min:5},
+    {id:"skincare", label:"Rutina de skincare / cuidado personal", zone:"Cuidado personal", min:10},
+    {id:"desayuno", label:"Preparar el desayuno", zone:"Cocina", min:20},
+    {id:"trastes", label:"Recoger y lavar los trastes", zone:"Cocina", min:15}
+  ];
+  const ZONE_COLOR = {
+    "Dormitorio":"var(--clay)",
+    "Cuidado personal":"var(--plum)",
+    "Cocina":"var(--wood)"
+  };
+
+  function load(key, fallback){
+    try{
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    }catch(e){ return fallback; }
+  }
+  function save(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+
+  let state = load("pu_state", null);
+  if(!state || state.day !== todayKey()){
+    const prevTasks = state ? state.tasks.map(t => ({...t, done:false})) : DEFAULT_TASKS.map(t => ({...t, done:false}));
+    state = {
+      day: todayKey(),
+      tasks: prevTasks,
+      chronotype: state ? state.chronotype : null,
+      curve: state ? state.curve : null,
+      cycle: state ? state.cycle : {start:"", len:28},
+      routine: state ? state.routine : {wake:"07:00", arriveHome:"19:00"},
+      goal: state ? state.goal : {text:"", target:7, daysDone:0, lastMarked:null},
+      wellbeing: {sat:null, fun:null},
+      reminderTimes: state ? state.reminderTimes : {manana:"08:00", tarde:"15:00", noche:"20:00"},
+      reminderOn: state ? state.reminderOn : {manana:false, tarde:false, noche:false}
+    };
+    save("pu_state", state);
+  }
+
+  function persist(){ save("pu_state", state); }
+
+  let history = load("pu_history", []);
+  function persistHistory(){ save("pu_history", history); }
+  function todayHistoryEntry(){
+    let entry = history.find(h => h.date === state.day);
+    if(!entry){
+      entry = {date: state.day, done:0, total:0, sat:null, fun:null};
+      history.push(entry);
+      history.sort((a,b) => a.date < b.date ? -1 : 1);
+      if(history.length > 7) history = history.slice(history.length - 7);
+    }
+    return entry;
+  }
+
+  // ---------- Task list ----------
+  function renderTasks(){
+    const root = document.getElementById("taskLists");
+    root.innerHTML = "";
+    const zones = ["Dormitorio","Cuidado personal","Cocina"].filter(z => state.tasks.some(t => t.zone === z));
+    const extraZones = [...new Set(state.tasks.map(t=>t.zone))].filter(z => !zones.includes(z));
+    [...zones, ...extraZones].forEach(zone => {
+      const h = document.createElement("div");
+      h.className = "zone-title";
+      h.textContent = zone;
+      root.appendChild(h);
+      const ul = document.createElement("ul");
+      ul.className = "tasks";
+      state.tasks.filter(t => t.zone === zone).forEach(t => {
+        const li = document.createElement("li");
+        li.className = "task-row" + (t.done ? " done" : "");
+        li.style.setProperty("--zone-color", ZONE_COLOR[zone] || "var(--clay)");
+        li.innerHTML = `
+          <input type="checkbox" id="chk_${t.id}" ${t.done ? "checked" : ""} aria-label="Marcar ${t.label} como hecho"/>
+          <span class="task-label">${t.label}</span>
+          <span class="task-min tabular">${t.min} min</span>
+        `;
+        li.querySelector("input").addEventListener("change", e => {
+          t.done = e.target.checked;
+          li.classList.toggle("done", t.done);
+          persist();
+          renderPlan();
+        });
+        ul.appendChild(li);
+      });
+      root.appendChild(ul);
+    });
+  }
+
+  document.getElementById("addTaskBtn").addEventListener("click", () => {
+    const labelEl = document.getElementById("newTaskLabel");
+    const minEl = document.getElementById("newTaskMin");
+    const label = labelEl.value.trim();
+    if(!label) return;
+    const min = Math.max(1, parseInt(minEl.value,10) || 5);
+    state.tasks.push({id:"custom_"+Date.now(), label, zone:"Otros", min, done:false});
+    labelEl.value = ""; minEl.value = "";
+    persist();
+    renderTasks();
+    renderPlan();
+  });
+
+  // ---------- Routine (test de rutinas) ----------
+  function addMinutes(hhmm, mins){
+    const [h,m] = hhmm.split(":").map(Number);
+    const d = new Date(2000,0,1,h,m);
+    d.setMinutes(d.getMinutes() + mins);
+    return d.toTimeString().slice(0,5);
+  }
+  function computeBlockTimes(){
+    const wake = state.routine.wake || "07:00";
+    const arrive = state.routine.arriveHome || "19:00";
+    const tardeEnd = addMinutes(arrive, 120);
+    return {
+      manana: `${wake}–${addMinutes(wake,90)}`,
+      tarde: `${arrive}–${tardeEnd}`,
+      noche: `${tardeEnd}–${addMinutes(tardeEnd,120)}`
+    };
+  }
+
+  // ---------- Cycle toggle (Ajustes) ----------
+  const cycleEnabledEl = document.getElementById("cycleEnabled");
+  const cycleFieldsEl = document.getElementById("cycleFields");
+  cycleEnabledEl.checked = !!state.cycle.start;
+  cycleFieldsEl.hidden = !cycleEnabledEl.checked;
+  document.getElementById("cycleLen").value = state.cycle.len || 28;
+  document.getElementById("cycleStart").value = state.cycle.start || "";
+  cycleEnabledEl.addEventListener("change", e => {
+    cycleFieldsEl.hidden = !e.target.checked;
+    if(!e.target.checked){
+      document.getElementById("cycleStart").value = "";
+      state.cycle.start = "";
+      persist();
+    }
+  });
+
+  // ---------- Chronotype quiz ----------
+  const LEVELS = ["Baja","Media","Alta"];
+
+  function phaseModifier(){
+    const start = state.cycle.start;
+    const len = state.cycle.len || 28;
+    if(!start) return null;
+    const startDate = new Date(start + "T00:00:00");
+    const now = new Date();
+    const diffDays = Math.floor((now - startDate) / 86400000);
+    if(diffDays < 0) return null;
+    const dayInCycle = diffDays % len;
+    const frac = dayInCycle / len;
+    let phase, mod;
+    if(frac < 0.18){ phase = "menstrual"; mod = -1; }
+    else if(frac < 0.46){ phase = "folicular"; mod = 0; }
+    else if(frac < 0.56){ phase = "ovulatoria"; mod = 1; }
+    else if(frac < 0.82){ phase = "lútea"; mod = 0; }
+    else { phase = "lútea tardía"; mod = -1; }
+    return {phase, mod};
+  }
+
+  function computeCurve(score, circadianMod){
+    let base;
+    let chronotype;
+    if(score >= 6){ chronotype = "Gallo (mañanero)"; base = {manana:2, tarde:1, noche:0}; }
+    else if(score >= 3){ chronotype = "Intermedio"; base = {manana:1, tarde:2, noche:1}; }
+    else { chronotype = "Búho (nocturna)"; base = {manana:0, tarde:1, noche:2}; }
+
+    const pm = phaseModifier();
+    const curve = {};
+    ["manana","tarde","noche"].forEach(b => {
+      let v = base[b] + (circadianMod||0) + (pm ? pm.mod : 0);
+      v = Math.max(0, Math.min(2, v));
+      curve[b] = v;
+    });
+    return {chronotype, curve, phase: pm ? pm.phase : null};
+  }
+
+  document.getElementById("quizForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const form = e.target;
+    const q1 = form.q1.value, q2 = form.q2.value, q3 = form.q3.value, q4 = form.q4.value;
+    if(q1==="" || q2==="" || q3==="" || q4===""){
+      alert("Responde las 4 preguntas para calcular tu energía.");
+      return;
+    }
+    const score = [q1,q2,q3,q4].reduce((a,b)=>a+parseInt(b,10),0);
+    const sleepHrs = form.sleepHrs.value, sleepVar = form.sleepVar.value;
+    const circadianMod = (sleepHrs === "menos6" || sleepVar === "variable") ? -1 : 0;
+
+    state.cycle.start = cycleEnabledEl.checked ? document.getElementById("cycleStart").value : "";
+    state.cycle.len = parseInt(document.getElementById("cycleLen").value,10) || 28;
+
+    const {chronotype, curve, phase} = computeCurve(score, circadianMod);
+    state.chronotype = chronotype;
+    state.curve = curve;
+    persist();
+    renderEnergy();
+    renderPlan();
+    showScreen("checklist");
+  });
+
+  function renderEnergy(){
+    const empty = document.getElementById("resultEmpty");
+    const content = document.getElementById("resultContent");
+    if(!state.curve){ empty.hidden = false; content.hidden = true; return; }
+    empty.hidden = true; content.hidden = false;
+
+    document.getElementById("chronotypeLabel").textContent = "Eres tipo " + state.chronotype;
+    const pm = phaseModifier();
+    document.getElementById("phaseNote").textContent = pm ? `Ciclo estimado: fase ${pm.phase}.` : "";
+
+    const disp = document.getElementById("curveDisplay");
+    const labels = {manana:"Mañana", tarde:"Tarde", noche:"Noche"};
+    const times = computeBlockTimes();
+    disp.innerHTML = Object.keys(labels).map(b => {
+      const v = state.curve[b];
+      const pct = 30 + v*35;
+      return `<div class="curve-block">
+        <div class="curve-bar-track"><div class="curve-bar-fill" style="height:${pct}%"></div></div>
+        <div class="curve-label">${labels[b]}<br/><span class="tabular" style="font-size:0.72rem">${times[b]}</span></div>
+        <div class="curve-value">${LEVELS[v]}</div>
+      </div>`;
+    }).join("");
+  }
+
+  // ---------- Plan ----------
+  const BLOCK_ORDER = ["manana","tarde","noche"];
+  const BLOCK_LABEL = {manana:"Mañana", tarde:"Tarde", noche:"Noche"};
+
+  const ENERGY_FACTOR = {0:1.25, 1:1.0, 2:0.85};
+
+  function renderPlan(){
+    const box = document.getElementById("planContent");
+    const pending = state.tasks.filter(t => !t.done);
+
+    if(!state.curve){
+      box.innerHTML = `<p class="empty-note">Completa el test de energía para que tu plan se organice solo por bloques del día.</p>`;
+      updateAdventure(0);
+      renderReminders();
+      logHistoryAndStats();
+      return;
+    }
+
+    const times = computeBlockTimes();
+    const order = [...BLOCK_ORDER].sort((a,b) => state.curve[b]-state.curve[a]);
+    const sortedTasks = [...pending].sort((a,b) => b.min - a.min);
+    const buckets = {manana:[], tarde:[], noche:[]};
+    sortedTasks.forEach((t, i) => { buckets[order[i % order.length]].push(t); });
+
+    box.innerHTML = "";
+    BLOCK_ORDER.forEach(b => {
+      const items = buckets[b];
+      const factor = ENERGY_FACTOR[state.curve[b]];
+      const total = items.reduce((a,t)=>a + Math.round(t.min*factor), 0);
+      const wrap = document.createElement("div");
+      wrap.className = "plan-block";
+      wrap.innerHTML = `
+        <div class="plan-block-head">
+          <h3>${BLOCK_LABEL[b]} · ${times[b]} · energía ${LEVELS[state.curve[b]].toLowerCase()}</h3>
+          <span class="total tabular">${total} min</span>
+        </div>
+        ${items.length ? `<ul class="tasks">${items.map(t => `
+          <li class="task-row" style="--zone-color:${ZONE_COLOR[t.zone] || "var(--wood)"}">
+            <input type="checkbox" data-plan-id="${t.id}" aria-label="Marcar ${t.label} como hecho"/>
+            <span class="task-label">${t.label}</span>
+            <span class="task-min tabular">${Math.round(t.min*factor)} min</span>
+          </li>`).join("")}</ul>` : `<div class="empty-note">
+          <p style="margin:0 0 0.6rem">Sin pendientes en este bloque.</p>
+          <button type="button" class="ghost btn-add-pendiente" style="font-size:0.82rem; padding:0.4rem 0.9rem;">Agregar en Checklist →</button>
+        </div>`}
+      `;
+      box.appendChild(wrap);
+    });
+
+    box.querySelectorAll("input[data-plan-id]").forEach(inp => {
+      inp.addEventListener("change", e => {
+        const id = e.target.getAttribute("data-plan-id");
+        const t = state.tasks.find(t => t.id === id);
+        if(t){ t.done = e.target.checked; persist(); renderTasks(); renderPlan(); }
+      });
+    });
+
+    box.querySelectorAll(".btn-add-pendiente").forEach(btn => {
+      btn.addEventListener("click", () => showScreen("checklist"));
+    });
+
+    const doneMin = state.tasks.filter(t=>t.done).reduce((a,t)=>a+t.min,0);
+    updateAdventure(doneMin);
+    renderReminders();
+    logHistoryAndStats();
+  }
+
+  function updateAdventure(doneMin){
+    document.getElementById("adventureMinutes").textContent = doneMin + " min";
+  }
+
+  // ---------- Goal ----------
+  function renderGoal(){
+    document.getElementById("goalText").value = state.goal.text;
+    document.getElementById("goalTarget").value = state.goal.target;
+    const pct = Math.min(100, Math.round(state.goal.daysDone / state.goal.target * 100)) || 0;
+    document.getElementById("goalBar").style.width = pct + "%";
+    document.getElementById("goalDaysLabel").textContent = `${state.goal.daysDone} de ${state.goal.target} días`;
+    document.getElementById("goalPct").textContent = pct + "%";
+    document.getElementById("markDayBtn").disabled = state.goal.lastMarked === state.day;
+  }
+  document.getElementById("goalText").addEventListener("input", e => { state.goal.text = e.target.value; persist(); });
+  document.getElementById("goalTarget").addEventListener("change", e => {
+    state.goal.target = Math.max(1, parseInt(e.target.value,10) || 7);
+    persist(); renderGoal(); logHistoryAndStats();
+  });
+  document.getElementById("markDayBtn").addEventListener("click", () => {
+    if(state.goal.lastMarked === state.day) return;
+    state.goal.daysDone += 1;
+    state.goal.lastMarked = state.day;
+    persist();
+    renderGoal();
+    logHistoryAndStats();
+  });
+
+  // ---------- Wellbeing (5 caritas) ----------
+  const SCALE_LABELS = ["Muy triste","Triste","Neutral","Alegre","Muy alegre"];
+  function buildScale(rootId, key){
+    const root = document.getElementById(rootId);
+    root.innerHTML = SCALE_LABELS.map((l,i) => `<button type="button" data-v="${i+1}">${l}</button>`).join("");
+    root.querySelectorAll("button").forEach(btn => {
+      if(+btn.dataset.v === state.wellbeing[key]) btn.classList.add("on");
+      btn.addEventListener("click", () => {
+        state.wellbeing[key] = +btn.dataset.v;
+        persist();
+        root.querySelectorAll("button").forEach(b=>b.classList.remove("on"));
+        btn.classList.add("on");
+        logHistoryAndStats();
+      });
+    });
+  }
+  function renderWellbeing(){
+    buildScale("satRow","sat");
+    buildScale("funRow","fun");
+  }
+
+  // ---------- History + weekly stats ----------
+  function logHistoryAndStats(){
+    const entry = todayHistoryEntry();
+    entry.done = state.tasks.filter(t=>t.done).length;
+    entry.total = state.tasks.length;
+    entry.sat = state.wellbeing.sat;
+    entry.fun = state.wellbeing.fun;
+    persistHistory();
+
+    const rates = history.map(h => h.total ? h.done/h.total : 0);
+    const adherenciaAvg = rates.length ? Math.round(rates.reduce((a,b)=>a+b,0)/rates.length*100) : 0;
+    document.getElementById("statAdherencia").textContent = adherenciaAvg + "%";
+
+    let racha = 0;
+    for(let i = history.length - 1; i >= 0; i--){
+      const r = history[i].total ? history[i].done/history[i].total : 0;
+      if(r >= 0.8) racha++; else break;
+    }
+    document.getElementById("statRacha").textContent = racha + (racha === 1 ? " día" : " días");
+
+    const metaPct = Math.min(100, Math.round(state.goal.daysDone / state.goal.target * 100)) || 0;
+    const kpi = Math.round((adherenciaAvg + metaPct) / 2);
+    document.getElementById("statKpi").textContent = kpi + "%";
+
+    const feelings = history.flatMap(h => [h.sat, h.fun]).filter(v => v !== null && v !== undefined);
+    const bienestar = feelings.length ? (feelings.reduce((a,b)=>a+b,0)/feelings.length).toFixed(1) : null;
+    document.getElementById("statBienestar").textContent = bienestar ? bienestar + "/5" : "–";
+  }
+
+  // ---------- Reminders ----------
+  function renderReminders(){
+    const root = document.getElementById("reminderRows");
+    root.innerHTML = "";
+    BLOCK_ORDER.forEach(b => {
+      const row = document.createElement("div");
+      row.className = "reminder-row";
+      row.innerHTML = `
+        <label for="time_${b}">${BLOCK_LABEL[b]}</label>
+        <input type="time" id="time_${b}" value="${state.reminderTimes[b]}" style="width:7.5rem"/>
+        <span class="toggle">
+          <input type="checkbox" id="on_${b}" ${state.reminderOn[b] ? "checked" : ""}/>
+          <span class="track"></span>
+          <span class="thumb"></span>
+        </span>
+      `;
+      row.querySelector(`#time_${b}`).addEventListener("change", e => {
+        state.reminderTimes[b] = e.target.value;
+        persist();
+        scheduleReminders();
+      });
+      row.querySelector(`#on_${b}`).addEventListener("change", e => {
+        state.reminderOn[b] = e.target.checked;
+        persist();
+        scheduleReminders();
+      });
+      root.appendChild(row);
+    });
+  }
+
+  let scheduledTimers = [];
+  function scheduleReminders(){
+    scheduledTimers.forEach(clearTimeout);
+    scheduledTimers = [];
+    if(!("Notification" in window) || Notification.permission !== "granted") return;
+    const now = new Date();
+    BLOCK_ORDER.forEach(b => {
+      if(!state.reminderOn[b]) return;
+      const [h,m] = state.reminderTimes[b].split(":").map(Number);
+      const target = new Date();
+      target.setHours(h, m, 0, 0);
+      const delay = target - now;
+      if(delay <= 0) return;
+      const label = BLOCK_LABEL[b];
+      const id = setTimeout(() => {
+        new Notification("Peacefull and usefull", {
+          body: `Es hora de tu bloque de ${label.toLowerCase()} — revisa tu plan de hoy.`
+        });
+      }, delay);
+      scheduledTimers.push(id);
+    });
+  }
+
+  document.getElementById("enableNotifs").addEventListener("click", () => {
+    if(!("Notification" in window)){
+      const chip = document.getElementById("notifStatus");
+      chip.hidden = false;
+      chip.textContent = "Este navegador no soporta notificaciones.";
+      return;
+    }
+    Notification.requestPermission().then(perm => {
+      const chip = document.getElementById("notifStatus");
+      chip.hidden = false;
+      chip.textContent = perm === "granted" ? "Recordatorios activados" : "Permiso no concedido";
+      if(perm === "granted") scheduleReminders();
+    });
+  });
+
+  // ---------- init ----------
+  document.getElementById("wakeTime").value = state.routine.wake;
+  document.getElementById("arriveHome").value = state.routine.arriveHome;
+  document.getElementById("wakeTime").addEventListener("change", e => {
+    state.routine.wake = e.target.value; persist(); renderEnergy(); renderPlan();
+  });
+  document.getElementById("arriveHome").addEventListener("change", e => {
+    state.routine.arriveHome = e.target.value; persist(); renderEnergy(); renderPlan();
+  });
+
+  renderTasks();
+  renderEnergy();
+  renderGoal();
+  renderWellbeing();
+  renderPlan();
+  renderReminders();
+  if(("Notification" in window) && Notification.permission === "granted") scheduleReminders();
+})();
+</script>
+</body>
+</html>
